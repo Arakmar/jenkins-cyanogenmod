@@ -9,12 +9,12 @@ mkdir -p ../android
 cd ../android
 export WORKSPACE=$PWD
 
-if [ ! -d hudson ]
+if [ ! -d jenkins-cyanogenmod ]
 then
   git clone git://github.com/Arakmar/jenkins-cyanogenmod.git
 fi
 
-cd hudson
+cd jenkins-cyanogenmod
 ## Get rid of possible local changes
 git reset --hard
 git pull -s resolve
