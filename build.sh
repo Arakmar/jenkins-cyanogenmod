@@ -316,7 +316,12 @@ fi
 
 echo "$REPO_BRANCH-$RELEASE_MANIFEST" > .last_branch
 
-time mka bacon recoveryzip recoveryimage checkapi
+if [[ "$MAX_THREADS" =~ ^[0-9]+$ ]]; then
+  time make -j"$MAX_THREADS" bacon recoveryzip recoveryimage checkapi
+else
+  time mka bacon recoveryzip recoveryimage checkapi
+fi
+
 check_result "Build failed."
 
 if [ "$SIGN_BUILD" = "true" ]
