@@ -247,10 +247,10 @@ then
   IS_HTTP=$(echo $GERRIT_CHANGES | grep http)
   if [ -z "$IS_HTTP" ]
   then
-    python $WORKSPACE/hudson/repopick.py $GERRIT_CHANGES
+    python build/tools/repopick.py -f -v $GERRIT_CHANGES
     check_result "gerrit picks failed."
   else
-    python $WORKSPACE/hudson/repopick.py $(curl $GERRIT_CHANGES)
+    python build/tools/repopick.py -f -v $(curl $GERRIT_CHANGES)
     check_result "gerrit picks failed."
   fi
   if [ ! -z "$GERRIT_XLATION_LINT" ]
