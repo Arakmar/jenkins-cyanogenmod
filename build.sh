@@ -126,7 +126,7 @@ fi
 
 rm -rf .repo/manifests*
 rm -f .repo/local_manifests/dyn-*.xml
-repo init -u $SYNC_PROTO://github.com/CyanogenMod/android.git -b $SYNC_BRANCH $MANIFEST
+repo init -u $SYNC_PROTO://github.com/lineageos/android.git -b $SYNC_BRANCH $MANIFEST
 check_result "repo init failed."
 
 # make sure ccache is in PATH
@@ -203,7 +203,7 @@ fi
 lunch $LUNCH
 check_result "lunch failed."
 
-rm -f $OUT/cm-*.zip*
+rm -f $OUT/lineage-*.zip*
 
 UNAME=$(uname)
 
@@ -324,44 +324,11 @@ fi
 
 check_result "Build failed."
 
-if [ "$SIGN_BUILD" = "true" ]
-then
-  MODVERSION=$(cat $OUT/system/build.prop | grep ro.cm.version | cut -d = -f 2)
-  if [ ! -z "$MODVERSION" -a -f $OUT/obj/PACKAGING/target_files_intermediates/$TARGET_PRODUCT-target_files-$BUILD_NUMBER.zip ]
-  then
-    if [ -s $OUT/ota_script_path ]
-    then
-        OTASCRIPT=$(cat $OUT/ota_script_path)
-    else
-        OTASCRIPT=./build/tools/releasetools/ota_from_target_files
-    fi
-    if [ -z "$WITH_GMS" -o "$WITH_GMS" = "false" ]
-    then
-        OTASCRIPT="$OTASCRIPT --backup=true"
-    fi
-    if [ -s $OUT/ota_override_device ]
-    then
-        OTASCRIPT="$OTASCRIPT --override_device=$(cat $OUT/ota_override_device)"
-    fi
-    ./build/tools/releasetools/sign_target_files_apks -e Term.apk= -d vendor/cm-priv/keys $OUT/obj/PACKAGING/target_files_intermediates/$TARGET_PRODUCT-target_files-$BUILD_NUMBER.zip $OUT/$MODVERSION-signed-intermediate.zip
-    $OTASCRIPT -k vendor/cm-priv/keys/releasekey $OUT/$MODVERSION-signed-intermediate.zip $WORKSPACE/archive/cm-$MODVERSION-signed.zip
-    md5sum $WORKSPACE/archive/cm-$MODVERSION-signed.zip > $WORKSPACE/archive/cm-$MODVERSION-signed.zip.md5sum
-    if [ "$FASTBOOT_IMAGES" = "true" ]
-    then
-       ./build/tools/releasetools/img_from_target_files $OUT/$MODVERSION-signed-intermediate.zip $WORKSPACE/archive/cm-$MODVERSION-fastboot.zip
-       md5sum $WORKSPACE/archive/cm-$MODVERSION-fastboot.zip > $WORKSPACE/archive/cm-$MODVERSION-fastboot.zip.md5sum
-    fi
-    rm -f $OUT/ota_script_path $OUT/ota_override_device
-  else
-    echo "Unable to find target files to sign"
-    exit 1
-  fi
-else
-  for f in $(ls $OUT/cm-*.zip*)
-  do
-    ln $f $WORKSPACE/archive/$(basename $f)
-  done
-fi
+for f in $(ls $OUT/lineage-*.zip*)
+do
+ln $f $WORKSPACE/archive/$(basename $f)
+done
+
 if [ -f $OUT/utilties/update.zip ]
 then
   cp $OUT/utilties/update.zip $WORKSPACE/archive/recovery.zip
@@ -372,7 +339,7 @@ then
 fi
 
 # archive the build.prop as well
-ZIP=$(ls $WORKSPACE/archive/cm-*.zip | grep -v -- -fastboot)
+ZIP=$(ls $WORKSPACE/archive/lineage-*.zip | grep -v -- -fastboot)
 unzip -p $ZIP system/build.prop > $WORKSPACE/archive/build.prop
 
 if [ "$TARGET_BUILD_VARIANT" = "user" -a "$EXTRA_DEBUGGABLE_BOOT" = "true" ]
